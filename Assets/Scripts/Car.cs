@@ -24,6 +24,7 @@ public class Car : MonoBehaviour
     [ContextMenu("Stop")]
     public void StopMovement()
     {
+        if(movementCoroutine != null)
         StopCoroutine(movementCoroutine);
         movementCoroutine = StartCoroutine(Stoping());
     }

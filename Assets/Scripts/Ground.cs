@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParalaxGround : MonoBehaviour
+public class Ground : MonoBehaviour
 {
     [SerializeField] private GroundPart GroundPartPrefab;
     [Space]
