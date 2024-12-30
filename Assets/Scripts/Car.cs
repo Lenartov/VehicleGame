@@ -18,15 +18,24 @@ public class Car : MonoBehaviour
     [ContextMenu("Start")]
     public void StartMovement()
     {
+        if (movementCoroutine != null)
+            return;
+
         movementCoroutine = StartCoroutine(Accelerating());
     }
 
     [ContextMenu("Stop")]
     public void StopMovement()
     {
-        if(movementCoroutine != null)
-        StopCoroutine(movementCoroutine);
+        if (movementCoroutine != null)
+            StopCoroutine(movementCoroutine);
+        
         movementCoroutine = StartCoroutine(Stoping());
+    }
+
+    public Vector3 GetCurrVelocity()
+    {
+        return currentSpeed * transform.forward;
     }
 
     private IEnumerator Accelerating()
@@ -66,8 +75,8 @@ public class Car : MonoBehaviour
 
             yield return null;
         }
-        currentSpeed = 0f;
 
-        yield return null;
+        currentSpeed = 0f;
+        movementCoroutine = null;
     }
 }
