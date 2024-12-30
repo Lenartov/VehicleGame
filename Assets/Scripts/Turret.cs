@@ -16,6 +16,12 @@ public class Turret : MonoBehaviour
     private Pool<Bullet> bulletPool;
     private Coroutine shooting;
     private bool isActivated = true; //temp
+    private Rigidbody rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     private void Start()
     {
@@ -24,7 +30,7 @@ public class Turret : MonoBehaviour
         bulletPool = Pool.Create(bulletPrefab, poolCapacity, storage.transform).NonLazy();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if(isActivated)
             LookAtPosition(PlayerInput.GetCursorPos(aimMask));
@@ -42,8 +48,10 @@ public class Turret : MonoBehaviour
 
     public void LookAtPosition(Vector3 pos)
     {
-        pos.y = transform.position.y;
-        transform.LookAt(pos);
+        Quaternion targetRotation = Quaternion.LookRotation((pos - transform.position).normalized);
+        Quaternion smoothRotation = Quaternion.Lerp(rb.rotation, targetRotation, 20f * Time.fixedDeltaTime);
+
+        rb.MoveRotation(smoothRotation);
     }
 
     public void StartShooting()
@@ -75,7 +83,7 @@ public class Turret : MonoBehaviour
             if(car == null)
                 bullet.Shoot(muzzle.transform.forward, Vector3.zero);
             else
-                bullet.Shoot(muzzle.transform.forward, car.GetCurrVelocity());
+                bullet.Shoot(muzzle.transform.forward, car.GetVelocity());
 
             StartCoroutine(TakingBullets(bullet));
             yield return delayWait;

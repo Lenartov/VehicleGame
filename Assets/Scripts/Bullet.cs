@@ -6,6 +6,8 @@ public class Bullet : MonoBehaviour, IPoolObject
     [SerializeField] private float speed;
     [SerializeField] private float damage;
 
+    public float Damage => damage;
+
     private Rigidbody rb;
 
     private void Awake()

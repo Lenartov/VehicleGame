@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,8 +13,13 @@ public class Car : MonoBehaviour
     [SerializeField] private AnimationCurve stopAnim;
     [SerializeField] private float stopDuration;
 
+    private Rigidbody rb;
     private Coroutine movementCoroutine;
-    private float currentSpeed;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     [ContextMenu("Start")]
     public void StartMovement()
@@ -21,7 +27,7 @@ public class Car : MonoBehaviour
         if (movementCoroutine != null)
             return;
 
-        movementCoroutine = StartCoroutine(Accelerating());
+        movementCoroutine = StartCoroutine(Starting());
     }
 
     [ContextMenu("Stop")]
@@ -33,50 +39,34 @@ public class Car : MonoBehaviour
         movementCoroutine = StartCoroutine(Stoping());
     }
 
-    public Vector3 GetCurrVelocity()
+    public Vector3 GetVelocity()
     {
-        return currentSpeed * transform.forward;
+        return rb.velocity;
     }
 
-    private IEnumerator Accelerating()
+    private IEnumerator Starting()
     {
-        currentSpeed = 0f;
-        for (float alpha = 0f; alpha < 1f; alpha += Time.deltaTime/ accelerationDuration)
+        for (float alpha = 0f; alpha < 1f; alpha += Time.fixedDeltaTime / accelerationDuration)
         {
-            currentSpeed = accelerationAnim.Evaluate(alpha) * speed;
-            transform.Translate(transform.forward * (Time.deltaTime * currentSpeed));
+            rb.velocity = transform.forward * (accelerationAnim.Evaluate(alpha) * speed);
 
             yield return null;
         }
-        currentSpeed = speed;
-
-        yield return Moving();
+        rb.velocity = speed * transform.forward;
     }
 
-
-    private IEnumerator Moving()
-    {
-        currentSpeed = speed;
-        while (true)
-        {
-            transform.Translate(transform.forward * (Time.deltaTime * currentSpeed));
-
-            yield return null;
-        }
-    }
 
     private IEnumerator Stoping()
     {
-        float maxReachedSpeed = currentSpeed;
-        for (float alpha = 0f; alpha < 1f; alpha += Time.deltaTime / stopDuration)
+        float maxReachedSpeed = rb.velocity.z;
+        for (float alpha = 0f; alpha < 1f; alpha += Time.fixedDeltaTime / stopDuration)
         {
-            currentSpeed = stopAnim.Evaluate(alpha) * maxReachedSpeed;
-            transform.Translate(transform.forward * (Time.deltaTime * currentSpeed));
+            rb.velocity = transform.forward * (stopAnim.Evaluate(alpha) * maxReachedSpeed);
 
             yield return null;
         }
 
-        currentSpeed = 0f;
+        rb.velocity = Vector3.zero;
         movementCoroutine = null;
     }
 }

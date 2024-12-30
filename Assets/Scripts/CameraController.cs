@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     }
 
     [ContextMenu("GameView")]
-    public void UseStartGameView()
+    public void UseGameView()
     {
         startScreenView.enabled = false;
     }
