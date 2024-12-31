@@ -1,6 +1,5 @@
 using Redcode.Pools;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
@@ -16,8 +15,6 @@ public class EnemySpawner : MonoBehaviour
     private void Start()
     {
         InitPool();
-
-
         spawnCoroutine = StartCoroutine(Spawning());
     }
 

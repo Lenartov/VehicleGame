@@ -20,11 +20,6 @@ public class Bullet : MonoBehaviour, IPoolObject
         rb.velocity += dir * speed + initVelocity;
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        //aply dmg 
-    }
-
     public void OnCreatedInPool() {}
 
     public void OnGettingFromPool()
