@@ -52,7 +52,12 @@ public class Car : MonoBehaviour
 
             yield return null;
         }
-        rb.velocity = speed * transform.forward;
+
+        while (true)
+        {
+            rb.velocity = speed * transform.forward;
+            yield return null;
+        }
     }
 
 

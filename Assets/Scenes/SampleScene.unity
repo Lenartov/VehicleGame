@@ -396,7 +396,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 419687769}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000082396134, y: 0.00000008254062, z: -0.00000007723195, w: 1}
+  m_LocalRotation: {x: -0.000000021521002, y: -0.000000036566938, z: 0.00000003482797, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -433,7 +433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91456ca33b7c1b042a9469109f70814a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoint: {fileID: 9002364252065145974}
+  playerCar: {fileID: 9002364252065145973}
+  spawnDistanceOffset: 80
   enemyPrefab: {fileID: 3736884978596242931, guid: b5243f0332dc96c46a80d6062f86dcf5, type: 3}
   spawnRate: 180
 --- !u!4 &444153748
@@ -685,8 +686,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 665331473}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0051155193, y: -0.7536535, z: 0.590483, w: -0.28863478}
-  m_LocalPosition: {x: -4.838898, y: 13.427021, z: 1.6830835}
+  m_LocalRotation: {x: -0.005115524, y: -0.75365347, z: 0.5904832, w: -0.28863463}
+  m_LocalPosition: {x: -4.8388968, y: 13.427021, z: 1.6830835}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -969,7 +970,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.09175029, y: 0.9077819, z: -0.3042958, w: -0.2737115}
+  m_LocalRotation: {x: -0.09175031, y: 0.9077819, z: -0.30429587, w: -0.27371147}
   m_LocalPosition: {x: 1.1833313, y: 2.3, z: 2.5376618}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1034,6 +1035,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2636644803452618184, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3986658258191478678, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -1122,11 +1127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e658b81a8e21468429df8bf3eb06de7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &9002364252065145974 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4432190381642561380, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
-  m_PrefabInstance: {fileID: 9002364252065145970}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

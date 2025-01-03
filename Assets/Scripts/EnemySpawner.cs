@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private Transform spawnPoint;
-    [SerializeField] private Enemy enemyPrefab;
+    [SerializeField] private Car playerCar;
+    [SerializeField] private float spawnDistanceOffset;
     [Space]
+    [SerializeField] private Enemy enemyPrefab;
     [SerializeField] private float spawnRate;
 
     private Pool<Enemy> enemyPool;
@@ -19,12 +20,12 @@ public class EnemySpawner : MonoBehaviour
     }
 
     [ContextMenu("Spawn")]
-    public void Spawn(Vector3 posOffset)
+    public void Spawn(Vector3 pos)
     {
         Enemy enemy = enemyPool.Get();
-        enemy.InitWithPool(enemyPool);
-        enemy.transform.position = spawnPoint.position + posOffset;
-
+        enemy.transform.position = pos;
+        enemy.transform.rotation = Quaternion.AngleAxis(180f, Vector3.up);
+        enemy.Init(enemyPool, playerCar);
     }
 
     private IEnumerator Spawning()
@@ -32,13 +33,13 @@ public class EnemySpawner : MonoBehaviour
         float delayBetweenSpawns = 60f / spawnRate;
         while (true)
         {
-            yield return new WaitForSeconds(delayBetweenSpawns + GetRandomOffset());
+            yield return new WaitForSeconds(delayBetweenSpawns + GetRandomTimeOffset());
 
-            Spawn(GetRandomPosOffset());
+            Spawn(playerCar.transform.position + GetRandomPosOffset());
         }
     }
 
-    private float GetRandomOffset()
+    private float GetRandomTimeOffset()
     {
         float rateRandomness = 0.2f;
 
@@ -47,9 +48,9 @@ public class EnemySpawner : MonoBehaviour
 
     private Vector3 GetRandomPosOffset()
     {
-        float posRandomness = 7f;
+        float xPosRandomness = 7f;
 
-        return new Vector3(Random.Range(-posRandomness, posRandomness), 0f, 0f);
+        return new Vector3(Random.Range(-xPosRandomness, xPosRandomness), 0f, spawnDistanceOffset);
     }
 
     private void InitPool()
