@@ -25,9 +25,19 @@ public class Turret : MonoBehaviour
 
     private void Start()
     {
+        InitPool();
+    }
+
+    private void InitPool()
+    {
         int poolCapacity = 12;
         GameObject storage = new GameObject("Bullet Storage");
-        bulletPool = Pool.Create(bulletPrefab, poolCapacity, storage.transform).NonLazy();
+        bulletPool = Pool.Create(bulletPrefab, 0, storage.transform);
+
+        for (int i = 0; i < poolCapacity; i++)
+        {
+            bulletPool.Take(Instantiate(bulletPrefab));
+        }
     }
 
     private void FixedUpdate()
@@ -78,14 +88,15 @@ public class Turret : MonoBehaviour
         while (true)
         {
             Bullet bullet = bulletPool.Get();
+            bullet.Init(bulletPool);
             bullet.transform.position = muzzle.transform.position;
 
-            if(car == null)
+            if (car == null)
                 bullet.Shoot(muzzle.transform.forward, Vector3.zero);
             else
                 bullet.Shoot(muzzle.transform.forward, car.GetVelocity());
 
-            StartCoroutine(TakingBullets(bullet));
+            //StartCoroutine(TakingBullets(bullet));
             yield return delayWait;
         }
     }

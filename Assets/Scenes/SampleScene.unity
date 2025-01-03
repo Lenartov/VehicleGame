@@ -436,7 +436,7 @@ MonoBehaviour:
   playerCar: {fileID: 9002364252065145973}
   spawnDistanceOffset: 80
   enemyPrefab: {fileID: 3736884978596242931, guid: b5243f0332dc96c46a80d6062f86dcf5, type: 3}
-  spawnRate: 180
+  spawnRate: 120
 --- !u!4 &444153748
 Transform:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using Redcode.Pools;
 using System.Collections;
 using UnityEngine;
@@ -8,25 +6,33 @@ using UnityEngine;
 public partial class Enemy : MonoBehaviour, IPoolObject
 {
     [SerializeField] private float maxHealth;
+    [Space]
+    [SerializeField] private float desiredSpeed;
+    [SerializeField] private AnimationCurve acceleration;
+    [Space]
+    [SerializeField] private Vector2 minMaxPlayerDetectionDistance;
 
-    private Pool<Enemy> pool;
-    private Coroutine delayedReturn;
-
+    private Rigidbody rb;
     private EnenyAnimController animController;
     private Health health;
 
+    private Pool<Enemy> pool;
     private Car playerCar;
+
     private Coroutine playerDetection;
-
-    private Rigidbody rb;
-
+    private Coroutine delayedReturn;
     private Coroutine idling;
+
+    private float movementSpeedAlpha = 0f;
+    private bool isAttacking;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
         Animator animator = GetComponent<Animator>();
         animController = new EnenyAnimController(animator);
+
         health = new Health(maxHealth);
         health.OnDeath += Die;
     }
@@ -35,7 +41,8 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     {
         if (other.gameObject.TryGetComponent(out Bullet bullet))
         {
-            ApplyDamage(bullet.Damage);
+            TakeDamage(bullet);
+            bullet.Hit();
         }
     }
 
@@ -48,30 +55,62 @@ public partial class Enemy : MonoBehaviour, IPoolObject
         CancelIdling();
         health.Reset();
         animController.Reset();
+        isAttacking = false;
     }
 
     public void Init(Pool<Enemy> newPool, Car car)
     {
-        pool = newPool;
-        ReturnToPoolAfterDelay();
-
         playerCar = car;
+
+        pool = newPool;
+        ReturnToPoolAfterDelay(10f);
+
         StartIdling();
         StartPlayerDetection();
     }
 
-    private void ApplyDamage(float damage)
+    private void TakeDamage(Bullet bullet)
     {
+        health.TakeDamage(bullet.Damage);
         animController.OnGetHit();
-        health.TakeDamage(damage);
+
+        if (isAttacking)
+            return;
+
+        rb.AddForce(bullet.ShootDiraction * 20f, ForceMode.Impulse);
+        movementSpeedAlpha = Mathf.Clamp01(movementSpeedAlpha - 1f);
     }
 
     private void Die()
     {
-        Debug.Log("die");
-        CancelDelayedReturn();
-        CancelPlayerDetection();
+        //CancelDelayedReturn();
+        //CancelPlayerDetection();
         pool.Take(this);
+    }
+
+    private void Attack()
+    {
+        isAttacking = true;
+        animController.SetCloseToPlayer(true);
+        ReturnToPoolAfterDelay(0.6f);
+    }
+
+    private void ReturnToPoolAfterDelay(float delay)
+    {
+        CancelDelayedReturn();
+        delayedReturn = StartCoroutine(ReturningToPoolAfterDelay(delay));
+    }
+
+    private void StartPlayerDetection()
+    {
+        CancelPlayerDetection();
+        playerDetection = StartCoroutine(PlayerDetecting());
+    }
+
+    private void StartIdling()
+    {
+        CancelIdling();
+        idling = StartCoroutine(Idling());
     }
 
     private void CancelDelayedReturn()
@@ -88,33 +127,15 @@ public partial class Enemy : MonoBehaviour, IPoolObject
 
     private void CancelIdling()
     {
-        if(idling != null)
+        if (idling != null)
             StopCoroutine(idling);
 
-        rb.DOKill();
+        transform.DOKill();
     }
 
-    private void ReturnToPoolAfterDelay()
+    private IEnumerator ReturningToPoolAfterDelay(float delay)
     {
-        CancelDelayedReturn();
-        delayedReturn = StartCoroutine(ReturningToPoolAfterDelay());
-    }
-
-    private void StartPlayerDetection()
-    {
-        CancelPlayerDetection();
-        playerDetection = StartCoroutine(PlayerDetecting());
-    }
-
-    private void StartIdling()
-    {
-        CancelIdling();
-        idling = StartCoroutine(Idling());
-    }
-
-    private IEnumerator ReturningToPoolAfterDelay()
-    {
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(delay);
 
         if (pool == null)
         {
@@ -142,7 +163,7 @@ public partial class Enemy : MonoBehaviour, IPoolObject
             else
             {
                 Vector3 posToLook = transform.position + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
-                transform.DORotate(Quaternion.LookRotation(posToLook - transform.position, Vector3.up).eulerAngles, 0.3f);
+                transform.DORotate(Quaternion.LookRotation(posToLook - transform.position, Vector3.up).eulerAngles, 0.2f);
 
                 yield return new WaitForSeconds(Random.Range(3f, 4f));
                 isStanding = true;
@@ -153,41 +174,51 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     private IEnumerator PlayerDetecting()
     {
         WaitForSeconds delay = new WaitForSeconds(0.1f);
-        float requiredDistance = 35f + Random.Range(-7f, 7f);
+        float requiredDistance = Random.Range(minMaxPlayerDetectionDistance.x, minMaxPlayerDetectionDistance.y);
         while (true)
         {
             bool isCloseEnought = Vector3.Distance(transform.position, playerCar.transform.position) < requiredDistance;
-
             if (isCloseEnought)
             {
-                Vector3 posToLook = playerCar.transform.position - transform.position;
-                transform.DORotate(Quaternion.LookRotation(posToLook - transform.position, Vector3.up).eulerAngles, 0.2f);
-
+                CancelIdling();
                 StartCoroutine(Chasing());
+                StartCoroutine(Looking());
+                break;
             }
             yield return delay;
         }
+    }
 
+    private IEnumerator Looking()
+    {
+        float rotateSpeed = 8f;
+        while (true)
+        {
+            Vector3 posToLook = (playerCar.transform.position - transform.position).normalized;
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(posToLook, Vector3.up), Time.deltaTime * rotateSpeed);
+            yield return null;
+        }
     }
 
     private IEnumerator Chasing()
     {
-        while (true)
+        WaitForSeconds delay = new WaitForSeconds(0.1f);
+        float accelerationTime = 0.5f;
+        float closeEnoughtDistance = 4f;
+        float speedMultiplier;
+
+        animController.SetRootMotion(false);
+        animController.SetIsPlayerDetected(true);
+
+        while (Vector3.Distance(rb.position, playerCar.transform.position) > closeEnoughtDistance)
         {
-            //while (Vector3.Distance(rb.position, playerCar.transform.position) > 1f)
-            {
-                animController.SetRootMotion(false);
-                animController.SetIsPlayerDetected(true);
+            speedMultiplier = acceleration.Evaluate(movementSpeedAlpha / accelerationTime);
+            animController.SetSpeedMultiplier(speedMultiplier);
+            rb.velocity = (playerCar.transform.position - rb.position).normalized * (speedMultiplier * desiredSpeed);
 
-                rb.velocity = (playerCar.transform.position - rb.position).normalized * 8f;
-                yield return new WaitForSeconds(0.1f);
-            }
-
-           // rb.velocity = Vector3.zero;
-           // animController.SetCloseToPlayer(true);
-
-           // yield return new WaitForSeconds(0.1f);
-
+            yield return delay;
+            movementSpeedAlpha = Mathf.Clamp01(movementSpeedAlpha + 0.1f);
         }
+        Attack();
     }
 }

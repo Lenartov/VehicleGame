@@ -168,7 +168,7 @@ MonoBehaviour:
     m_Bits: 64
   muzzle: {fileID: 3234933562197691470}
   bulletPrefab: {fileID: -8035233122275276860, guid: da53c0f61dff53e43b1d015495ccf7d5, type: 3}
-  fireRate: 180
+  fireRate: 360
 --- !u!54 &2033805597520112233
 Rigidbody:
   m_ObjectHideFlags: 0

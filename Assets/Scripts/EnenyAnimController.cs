@@ -9,10 +9,16 @@ public class EnenyAnimController
     private const string IsCloseToPlayerKeyName = "IsCloseToPlayer";
     private const string OnHitKeyName = "OnHit";
     private const string OnResetKeyName = "OnReset";
+    private const string SpeedMultiplierKeyName = "SpeedMultiplier";
 
     public EnenyAnimController (Animator anim)
     {
         animator = anim;
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        animator.SetFloat(SpeedMultiplierKeyName, multiplier);
     }
 
     public void SetRootMotion(bool r)
@@ -29,7 +35,6 @@ public class EnenyAnimController
 
     public void SetIsPlayerDetected(bool isPlayerDetected)
     {
-     //   animator.applyRootMotion = !isPlayerDetected;
         animator.SetBool(IsPlayerDetectedKeyName, isPlayerDetected);
 
     }
@@ -41,7 +46,6 @@ public class EnenyAnimController
     public void SetCloseToPlayer(bool isCloseToPlayer)
     {
         animator.SetBool(IsCloseToPlayerKeyName, isCloseToPlayer);
-        //SetIsPlayerDetected(true); //mb add late
     }
 
     public void Reset()
