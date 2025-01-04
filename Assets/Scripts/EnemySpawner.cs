@@ -23,9 +23,10 @@ public class EnemySpawner : MonoBehaviour
     public void Spawn(Vector3 pos)
     {
         Enemy enemy = enemyPool.Get();
+        enemy.Init(enemyPool, playerCar);
+
         enemy.transform.position = pos;
         enemy.transform.rotation = Quaternion.AngleAxis(180f, Vector3.up);
-        enemy.Init(enemyPool, playerCar);
     }
 
     private IEnumerator Spawning()
@@ -42,14 +43,12 @@ public class EnemySpawner : MonoBehaviour
     private float GetRandomTimeOffset()
     {
         float rateRandomness = 0.2f;
-
         return Random.Range(-rateRandomness, rateRandomness);
     }
 
     private Vector3 GetRandomPosOffset()
     {
         float xPosRandomness = 7f;
-
         return new Vector3(Random.Range(-xPosRandomness, xPosRandomness), 0f, spawnDistanceOffset);
     }
 

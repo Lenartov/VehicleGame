@@ -1,32 +1,46 @@
-using System.Collections.Generic;
+using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
-public class Ground : MonoBehaviour
+public partial class Ground : MonoBehaviour
 {
-    [SerializeField] private GroundPart GroundPartPrefab;
-    [Space]
+    [SerializeField] private GroundPart groundPartPrefab;
     [SerializeField] private int partsCount;
+    [Space]
+    [SerializeField] private float desiredSpeed;
+    [SerializeField] private float accelerationDuration;
+    [SerializeField] private float stopDuration;
 
-    private Vector3 currentSpawnPos;
-    private List<GroundPart> parts = new List<GroundPart>();
 
-    private void Start()
+    private GroundSpawner groundSpawner;
+
+    private float currentSpeed = 0f;
+
+    private void Awake()
     {
-        SpawnGround();
+        groundSpawner = new GroundSpawner(groundPartPrefab);
+        groundSpawner.SpawnGround(transform, partsCount);
+
+        Acceleration();
     }
 
-    public void SpawnGround()
+    private void Update()
     {
-        for (int i = 0; i < partsCount; i++)
-        {
-            SpawnNextPart();
-        }
+        if (currentSpeed <= 0.1f)
+            return;
+
+        transform.Translate(Vector3.forward * (-currentSpeed * Time.deltaTime));
     }
 
-    public void SpawnNextPart()
+    public void Acceleration()
     {
-        GroundPart part = Instantiate(GroundPartPrefab, transform.position + currentSpawnPos, Quaternion.identity, transform);
-        currentSpawnPos.z += part.Size.y;
-        parts.Add(part);
+        DOTween.To(() => currentSpeed, x => currentSpeed = x, desiredSpeed, stopDuration).SetEase(Ease.InCubic);
     }
+
+    public void Stop()
+    {
+        DOTween.To(() => currentSpeed, x => currentSpeed = x, 0f, accelerationDuration).SetEase(Ease.OutCubic);
+    }
+
+
 }

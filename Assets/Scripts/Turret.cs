@@ -87,25 +87,20 @@ public class Turret : MonoBehaviour
         WaitForSeconds delayWait = new WaitForSeconds(delayBetweenShoots);
         while (true)
         {
-            Bullet bullet = bulletPool.Get();
-            bullet.Init(bulletPool);
-            bullet.transform.position = muzzle.transform.position;
+            Bullet bullet = SpawnBullet();
+            bullet.Shoot(muzzle.transform.forward);
 
-            if (car == null)
-                bullet.Shoot(muzzle.transform.forward, Vector3.zero);
-            else
-                bullet.Shoot(muzzle.transform.forward, car.GetVelocity());
-
-            //StartCoroutine(TakingBullets(bullet));
             yield return delayWait;
         }
     }
 
-    private IEnumerator TakingBullets(Bullet bullet)
+    private Bullet SpawnBullet()
     {
-        float bulletLifeTime = 3f;
-        yield return new WaitForSeconds(bulletLifeTime);
+        Bullet bullet = bulletPool.Get();
+        bullet.Init(bulletPool);
 
-        bulletPool.Take(bullet);
+        bullet.transform.position = muzzle.transform.position;
+        bullet.transform.rotation = Quaternion.LookRotation(muzzle.transform.forward, Vector3.up);
+        return bullet;
     }
 }

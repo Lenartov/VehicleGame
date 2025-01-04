@@ -445,12 +445,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 444153746}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 603903372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &520630998
 GameObject:
@@ -559,8 +559,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb7b3ccf5b3d914a88c620a6ebc894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GroundPartPrefab: {fileID: 1338702570526948119, guid: b7f0d8228ff6fe24bae7f1dee8cd3dda, type: 3}
+  groundPartPrefab: {fileID: 1338702570526948119, guid: b7f0d8228ff6fe24bae7f1dee8cd3dda, type: 3}
   partsCount: 10
+  desiredSpeed: 10
+  accelerationDuration: 5
+  stopDuration: 2
 --- !u!4 &603903372
 Transform:
   m_ObjectHideFlags: 0
@@ -573,7 +576,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 444153748}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &650648020
@@ -605,7 +609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6305e9d32b36c194ab86909959f7f401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  car: {fileID: 9002364252065145973}
+  ground: {fileID: 603903371}
   cameraController: {fileID: 963194230}
 --- !u!4 &650648022
 Transform:
@@ -1035,14 +1039,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2636644803452618184, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3986658258191478678, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: f371ac58ce4eb94478e693941049d98c, type: 2}
     - target: {fileID: 6103055860584902952, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1084,12 +1080,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8216897325991788818, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
-      propertyPath: accelerationTime
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8216897325991788818, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
-      propertyPath: accelerationDistance
-      value: 30
+      propertyPath: speed
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8478081720216871885, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
       propertyPath: m_Name
@@ -1138,4 +1130,3 @@ SceneRoots:
   - {fileID: 520631000}
   - {fileID: 15301688}
   - {fileID: 650648022}
-  - {fileID: 444153748}

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private Car car;
+    [SerializeField] private Ground ground;
     [SerializeField] private CameraController cameraController;
 
     private void Start()
     {
-        car.StartMovement();
+        ground.Acceleration();
         cameraController.UseGameView();
     }
 
