@@ -6,6 +6,7 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private Car playerCar;
     [SerializeField] private float spawnDistanceOffset;
+    [SerializeField] private Vector2 minMaxDetectionRange;
     [Space]
     [SerializeField] private Enemy enemyPrefab;
     [SerializeField] private float spawnRate;
@@ -23,10 +24,9 @@ public class EnemySpawner : MonoBehaviour
     public void Spawn(Vector3 pos)
     {
         Enemy enemy = enemyPool.Get();
-        enemy.Init(enemyPool, playerCar);
-
         enemy.transform.position = pos;
         enemy.transform.rotation = Quaternion.AngleAxis(180f, Vector3.up);
+        enemy.Init(enemyPool, playerCar, minMaxDetectionRange);
     }
 
     private IEnumerator Spawning()
@@ -42,13 +42,13 @@ public class EnemySpawner : MonoBehaviour
 
     private float GetRandomTimeOffset()
     {
-        float rateRandomness = 0.2f;
+        float rateRandomness = 0.25f;
         return Random.Range(-rateRandomness, rateRandomness);
     }
 
     private Vector3 GetRandomPosOffset()
     {
-        float xPosRandomness = 7f;
+        float xPosRandomness = 5f;
         return new Vector3(Random.Range(-xPosRandomness, xPosRandomness), 0f, spawnDistanceOffset);
     }
 

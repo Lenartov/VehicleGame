@@ -21,9 +21,9 @@ public class EnenyAnimController
         animator.SetFloat(SpeedMultiplierKeyName, multiplier);
     }
 
-    public void SetRootMotion(bool r)
+    public void SetRootMotion(bool useRootMotion)
     {
-        animator.applyRootMotion = r;
+        animator.applyRootMotion = useRootMotion;
 
     }
 
@@ -50,9 +50,10 @@ public class EnenyAnimController
 
     public void Reset()
     {
-        animator.SetTrigger(OnResetKeyName);
+        SetRootMotion(true);
         SetIdleStandingOrWalking(true);
         SetCloseToPlayer(false);
         SetIsPlayerDetected(false);
+        animator.SetTrigger(OnResetKeyName);
     }
 }

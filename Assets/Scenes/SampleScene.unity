@@ -434,9 +434,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCar: {fileID: 9002364252065145973}
-  spawnDistanceOffset: 80
+  spawnDistanceOffset: 70
+  minMaxDetectionRange: {x: 17, y: 23}
   enemyPrefab: {fileID: 3736884978596242931, guid: b5243f0332dc96c46a80d6062f86dcf5, type: 3}
-  spawnRate: 120
+  spawnRate: 180
 --- !u!4 &444153748
 Transform:
   m_ObjectHideFlags: 0
@@ -1077,10 +1078,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6103055860584902952, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8216897325991788818, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}
-      propertyPath: speed
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8478081720216871885, guid: 55b030631e741d14ea8bb3b1445ae3ca, type: 3}

@@ -1,18 +1,19 @@
 using DG.Tweening;
+using Microlight.MicroBar;
 using Redcode.Pools;
 using System.Collections;
 using UnityEngine;
 
 public partial class Enemy : MonoBehaviour, IPoolObject
 {
+    [SerializeField] private MicroBar healthBar;
     [SerializeField] private float maxHealth;
     [Space]
     [SerializeField] private float desiredSpeed;
     [SerializeField] private AnimationCurve acceleration;
-    [Space]
-    [SerializeField] private Vector2 minMaxPlayerDetectionDistance;
 
     private Rigidbody rb;
+    private SkinnedMeshRenderer meshRenderer;
     private EnenyAnimController animController;
     private Health health;
 
@@ -23,17 +24,22 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     private Coroutine delayedReturn;
     private Coroutine idling;
 
+    private Vector2 minMaxPlayerTargetDistance;
     private float movementSpeedAlpha = 0f;
+    private bool isTargetDetected;
     private bool isAttacking;
+    private Color initColor;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        initColor = meshRenderer.material.color;
 
         Animator animator = GetComponent<Animator>();
         animController = new EnenyAnimController(animator);
 
-        health = new Health(maxHealth);
+        health = new Health(maxHealth, healthBar, false);
         health.OnDeath += Die;
     }
 
@@ -56,12 +62,13 @@ public partial class Enemy : MonoBehaviour, IPoolObject
         health.Reset();
         animController.Reset();
         isAttacking = false;
+        isTargetDetected = false;
     }
 
-    public void Init(Pool<Enemy> newPool, Car car)
+    public void Init(Pool<Enemy> newPool, Car car, Vector2 minMaxTargetDistance)
     {
         playerCar = car;
-
+        this.minMaxPlayerTargetDistance = minMaxTargetDistance;
         pool = newPool;
         ReturnToPoolAfterDelay(10f);
 
@@ -73,18 +80,25 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     {
         health.TakeDamage(bullet.Damage);
         animController.OnGetHit();
+        FlashMaterial();
+
+        if (!isTargetDetected)
+        {
+            isTargetDetected = true;
+            StartChase();
+        }
 
         if (isAttacking)
             return;
 
         rb.AddForce(bullet.ShootDiraction * 20f, ForceMode.Impulse);
-        movementSpeedAlpha = Mathf.Clamp01(movementSpeedAlpha - 1f);
+        movementSpeedAlpha = 0f;
     }
 
     private void Die()
     {
-        //CancelDelayedReturn();
-        //CancelPlayerDetection();
+        CancelDelayedReturn();
+        CancelPlayerDetection();
         pool.Take(this);
     }
 
@@ -93,6 +107,15 @@ public partial class Enemy : MonoBehaviour, IPoolObject
         isAttacking = true;
         animController.SetCloseToPlayer(true);
         ReturnToPoolAfterDelay(0.6f);
+    }
+    private void FlashMaterial()
+    {
+        float duration = 0.15f;
+        meshRenderer.material.DOColor(Color.white, duration).SetEase(Ease.OutFlash)
+            .OnComplete(() => 
+            {
+                meshRenderer.material.DOColor(initColor, duration).SetEase(Ease.OutCubic);
+            });
     }
 
     private void ReturnToPoolAfterDelay(float delay)
@@ -111,6 +134,14 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     {
         CancelIdling();
         idling = StartCoroutine(Idling());
+    }
+
+    private void StartChase()
+    {
+        isTargetDetected = true;
+        CancelIdling();
+        StartCoroutine(Chasing());
+        StartCoroutine(Looking());
     }
 
     private void CancelDelayedReturn()
@@ -162,8 +193,11 @@ public partial class Enemy : MonoBehaviour, IPoolObject
             }
             else
             {
-                Vector3 posToLook = transform.position + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
-                transform.DORotate(Quaternion.LookRotation(posToLook - transform.position, Vector3.up).eulerAngles, 0.2f);
+                //set a random direction with Z in the range { -1; -0.8} and { 0.8; 1}
+                //to avoid units going along the X - axis too often, and going beyond the screen
+                int sine = Random.Range(0f, 1f) >= 0.5f ? -1 : 1; 
+                Vector3 posToLook = new Vector3(Random.Range(-0.2f, 0.2f), 0f, (0.8f + Random.Range(0f, 0.2f)) * sine);    
+                transform.DORotate(Quaternion.LookRotation(posToLook, Vector3.up).eulerAngles, 0.2f);
 
                 yield return new WaitForSeconds(Random.Range(3f, 4f));
                 isStanding = true;
@@ -174,20 +208,20 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     private IEnumerator PlayerDetecting()
     {
         WaitForSeconds delay = new WaitForSeconds(0.1f);
-        float requiredDistance = Random.Range(minMaxPlayerDetectionDistance.x, minMaxPlayerDetectionDistance.y);
+        float requiredDistance = Random.Range(minMaxPlayerTargetDistance.x, minMaxPlayerTargetDistance.y);
         while (true)
         {
+            yield return delay;
+
             bool isCloseEnought = Vector3.Distance(transform.position, playerCar.transform.position) < requiredDistance;
             if (isCloseEnought)
             {
-                CancelIdling();
-                StartCoroutine(Chasing());
-                StartCoroutine(Looking());
+                StartChase();
                 break;
             }
-            yield return delay;
         }
     }
+
 
     private IEnumerator Looking()
     {

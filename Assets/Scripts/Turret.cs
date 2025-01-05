@@ -90,6 +90,16 @@ public class Turret : MonoBehaviour
             Bullet bullet = SpawnBullet();
             bullet.Shoot(muzzle.transform.forward);
 
+            //triple bullets for fun
+
+            /* Bullet bullet1 = SpawnBullet();
+            bullet1.Shoot(Quaternion.AngleAxis(5f, Vector3.up) * muzzle.transform.forward);
+            bullet1.transform.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(5, Vector3.up) * muzzle.transform.forward, Vector3.up);
+
+            Bullet bullet2 = SpawnBullet();
+            bullet2.Shoot(Quaternion.AngleAxis(5f, Vector3.down) * muzzle.transform.forward);
+            bullet2.transform.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(5, Vector3.down) * muzzle.transform.forward, Vector3.up);
+           */
             yield return delayWait;
         }
     }
