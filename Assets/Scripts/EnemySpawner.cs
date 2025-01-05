@@ -17,11 +17,24 @@ public class EnemySpawner : MonoBehaviour
     private void Start()
     {
         InitPool();
+    }
+
+    public void StartSpawning()
+    {
+        CancelSpawning();
         spawnCoroutine = StartCoroutine(Spawning());
     }
 
-    [ContextMenu("Spawn")]
-    public void Spawn(Vector3 pos)
+    public void CancelSpawning()
+    {
+        if (spawnCoroutine != null) 
+        {
+            StopCoroutine(spawnCoroutine);
+            spawnCoroutine = null;
+        }
+    }
+
+    public void SpawnUnit(Vector3 pos)
     {
         Enemy enemy = enemyPool.Get();
         enemy.transform.position = pos;
@@ -36,7 +49,7 @@ public class EnemySpawner : MonoBehaviour
         {
             yield return new WaitForSeconds(delayBetweenSpawns + GetRandomTimeOffset());
 
-            Spawn(playerCar.transform.position + GetRandomPosOffset());
+            SpawnUnit(playerCar.transform.position + GetRandomPosOffset());
         }
     }
 

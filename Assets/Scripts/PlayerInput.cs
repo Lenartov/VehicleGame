@@ -3,31 +3,32 @@ using UnityEngine.Events;
 
 public class PlayerInput : MonoBehaviour
 {
-    [SerializeField] private GameObject hitPos;
     [SerializeField] private LayerMask layerMask;
     [Space]
     [SerializeField] public UnityEvent OnPresed;
     [SerializeField] public UnityEvent OnRelesed;
 
+    [HideInInspector] public bool HandleInput { get; set; }
+
     private static Camera mainCamera;
-    private bool isPressed;
+
+    private void Awake()
+    {
+        mainCamera = Camera.main;
+    }
 
     private void Update()
     {
+        if (!HandleInput)
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             OnPresed?.Invoke();
-            isPressed = true;
         }
         if (Input.GetMouseButtonUp(0))
         {
             OnRelesed?.Invoke();
-            isPressed = false;
-        }
-
-        if (isPressed)
-        {
-            hitPos.transform.position = GetCursorPos(layerMask);
         }
     }
 

@@ -20,8 +20,6 @@ public partial class Ground : MonoBehaviour
     {
         groundSpawner = new GroundSpawner(groundPartPrefab);
         groundSpawner.SpawnGround(transform, partsCount);
-
-        Acceleration();
     }
 
     private void Update()
@@ -34,12 +32,12 @@ public partial class Ground : MonoBehaviour
 
     public void Acceleration()
     {
-        DOTween.To(() => currentSpeed, x => currentSpeed = x, desiredSpeed, stopDuration).SetEase(Ease.InCubic);
+        DOTween.To(() => currentSpeed, x => currentSpeed = x, desiredSpeed, accelerationDuration).SetEase(Ease.InCubic);
     }
 
     public void Stop()
     {
-        DOTween.To(() => currentSpeed, x => currentSpeed = x, 0f, accelerationDuration).SetEase(Ease.OutCubic);
+        DOTween.To(() => currentSpeed, x => currentSpeed = x, 0f, stopDuration).SetEase(Ease.OutCubic);
     }
 
 

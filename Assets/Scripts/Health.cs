@@ -21,7 +21,7 @@ public class Health
         currHealth = maxHealth;
 
         this.bar.Initialize(maxHealth);
-        bar.OnMaxValueChange += OnReinit;
+        bar.OnMaxValueChange += Reinit;
         this.alwaysVisible = alwaysVisible;
     }
 
@@ -44,7 +44,7 @@ public class Health
         bar.Initialize(maxHealth);
     }
 
-    private void OnReinit(MicroBar bar)
+    private void Reinit(MicroBar bar)
     {
         if (alwaysVisible)
             return;

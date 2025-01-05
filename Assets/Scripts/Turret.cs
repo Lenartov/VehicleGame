@@ -1,6 +1,7 @@
 using Redcode.Pools;
 using System.Collections;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class Turret : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Turret : MonoBehaviour
 
     private Pool<Bullet> bulletPool;
     private Coroutine shooting;
-    private bool isActivated = true; //temp
+    private bool isActivated = true;
     private Rigidbody rb;
 
     private void Awake()
@@ -28,6 +29,11 @@ public class Turret : MonoBehaviour
         InitPool();
     }
 
+    private void FixedUpdate()
+    {
+        if(isActivated)
+            LookAtPosition(PlayerInput.GetCursorPos(aimMask));
+    }
     private void InitPool()
     {
         int poolCapacity = 12;
@@ -40,20 +46,19 @@ public class Turret : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        if(isActivated)
-            LookAtPosition(PlayerInput.GetCursorPos(aimMask));
-    }
-
     public void Activate()
     {
         isActivated = true;
+        muzzle.SetActive(true);
     }
 
     public void Deactivate()
     {
         isActivated = false;
+        muzzle.SetActive(false);
+
+        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward);
+        rb.MoveRotation(targetRotation);
     }
 
     public void LookAtPosition(Vector3 pos)

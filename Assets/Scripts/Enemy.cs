@@ -4,10 +4,13 @@ using Redcode.Pools;
 using System.Collections;
 using UnityEngine;
 
-public partial class Enemy : MonoBehaviour, IPoolObject
+
+public class Enemy : MonoBehaviour, IPoolObject, IDamagable
 {
     [SerializeField] private MicroBar healthBar;
     [SerializeField] private float maxHealth;
+    [Space]
+    [SerializeField] private float damage;
     [Space]
     [SerializeField] private float desiredSpeed;
     [SerializeField] private AnimationCurve acceleration;
@@ -33,6 +36,7 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         initColor = meshRenderer.material.color;
 
@@ -47,8 +51,13 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     {
         if (other.gameObject.TryGetComponent(out Bullet bullet))
         {
-            TakeDamage(bullet);
+            TakeDamage(bullet.Damage);
             bullet.Hit();
+
+            if (isAttacking)
+                return;
+
+            GetHitImpact(bullet);
         }
     }
 
@@ -76,9 +85,9 @@ public partial class Enemy : MonoBehaviour, IPoolObject
         StartPlayerDetection();
     }
 
-    private void TakeDamage(Bullet bullet)
+    public void TakeDamage(float damage)
     {
-        health.TakeDamage(bullet.Damage);
+        health.TakeDamage(damage);
         animController.OnGetHit();
         FlashMaterial();
 
@@ -87,15 +96,9 @@ public partial class Enemy : MonoBehaviour, IPoolObject
             isTargetDetected = true;
             StartChase();
         }
-
-        if (isAttacking)
-            return;
-
-        rb.AddForce(bullet.ShootDiraction * 20f, ForceMode.Impulse);
-        movementSpeedAlpha = 0f;
     }
 
-    private void Die()
+    public void Die()
     {
         CancelDelayedReturn();
         CancelPlayerDetection();
@@ -106,8 +109,18 @@ public partial class Enemy : MonoBehaviour, IPoolObject
     {
         isAttacking = true;
         animController.SetCloseToPlayer(true);
+
+        StartCoroutine(ApplyDamageWithDelay(0.5f));
         ReturnToPoolAfterDelay(0.6f);
     }
+
+    private void GetHitImpact(Bullet bullet)
+    {
+        float impactForce = 20f;
+        rb.AddForce(bullet.ShootDiraction * impactForce, ForceMode.Impulse);
+        movementSpeedAlpha = 0f;
+    }
+
     private void FlashMaterial()
     {
         float duration = 0.15f;
@@ -254,5 +267,11 @@ public partial class Enemy : MonoBehaviour, IPoolObject
             movementSpeedAlpha = Mathf.Clamp01(movementSpeedAlpha + 0.1f);
         }
         Attack();
+    }
+
+    private IEnumerator ApplyDamageWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        playerCar.TakeDamage(damage);
     }
 }
