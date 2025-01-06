@@ -65,19 +65,22 @@ public class Enemy : MonoBehaviour, IPoolObject, IDamagable
 
     public void OnGettingFromPool()
     {
-        CancelDelayedReturn();
-        CancelPlayerDetection();
-        CancelIdling();
+        StopAllCoroutines();
         health.Reset();
         animController.Reset();
         isAttacking = false;
         isTargetDetected = false;
+        rb.velocity = Vector3.zero;
+        movementSpeedAlpha = 0f;
     }
 
     public void Init(Pool<Enemy> newPool, Car car, Vector2 minMaxTargetDistance)
     {
         playerCar = car;
+        playerCar.OnDie += BlowUp;
+
         this.minMaxPlayerTargetDistance = minMaxTargetDistance;
+
         pool = newPool;
         ReturnToPoolAfterDelay(10f);
 
@@ -114,10 +117,18 @@ public class Enemy : MonoBehaviour, IPoolObject, IDamagable
         ReturnToPoolAfterDelay(0.6f);
     }
 
+    private void BlowUp()
+    {
+        rb.velocity = Vector3.zero;
+        rb.AddExplosionForce(20f, playerCar.transform.position, 20f, 0f, ForceMode.Impulse);
+        
+        StopAllCoroutines();
+        ReturnToPoolAfterDelay(0.6f);
+    }
+
     private void GetHitImpact(Bullet bullet)
     {
-        float impactForce = 20f;
-        rb.AddForce(bullet.ShootDiraction * impactForce, ForceMode.Impulse);
+        rb.AddForce(bullet.ShootDiraction * 20f, ForceMode.Impulse);
         movementSpeedAlpha = 0f;
     }
 
@@ -134,6 +145,10 @@ public class Enemy : MonoBehaviour, IPoolObject, IDamagable
     private void ReturnToPoolAfterDelay(float delay)
     {
         CancelDelayedReturn();
+
+        if (!gameObject.activeSelf)
+            return;
+
         delayedReturn = StartCoroutine(ReturningToPoolAfterDelay(delay));
     }
 
@@ -173,8 +188,6 @@ public class Enemy : MonoBehaviour, IPoolObject, IDamagable
     {
         if (idling != null)
             StopCoroutine(idling);
-
-        transform.DOKill();
     }
 
     private IEnumerator ReturningToPoolAfterDelay(float delay)
@@ -187,6 +200,9 @@ public class Enemy : MonoBehaviour, IPoolObject, IDamagable
         }
         else
         {
+            if(playerCar != null)
+                playerCar.OnDie -= BlowUp;
+
             pool.Take(this);
         }
     }

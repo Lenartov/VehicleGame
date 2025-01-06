@@ -1,5 +1,4 @@
 using Redcode.Pools;
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -26,7 +25,7 @@ public class Bullet : MonoBehaviour, IPoolObject
     public void Init(Pool<Bullet> pool)
     {
         this.pool = pool;
-        TakeAfterDelay(3f);
+        TakeAfterDelay(1.5f);
     }
 
     public void Shoot(Vector3 dir)

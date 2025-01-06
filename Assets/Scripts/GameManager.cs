@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
         car.Deactivate();
         ground.OnDistanceChanged += UIManager.ProgressBar.SetProgress;
         ground.OnWin += Win;
+        ground.OnWin += car.Cheer;
+        ground.OnCloseToFinish += spawner.CancelSpawning;
     }
 
     public void StartGame()
@@ -35,7 +37,10 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
-        SceneManager.LoadScene(0);
+        car.Restart();
+        ground.Restart();
+        spawner.Restart();
+        StartGame();
     }
 
     public void Lose()
@@ -46,7 +51,7 @@ public class GameManager : MonoBehaviour
         cameraController.UseStartScreenView();
         spawner.CancelSpawning();
         ground.Stop();
-        slowMotion.SlowForDuration(0.3f, 2f);
+        slowMotion.SlowForDuration(0.4f, 1.5f);
     }
 
     public void Win()
@@ -59,6 +64,4 @@ public class GameManager : MonoBehaviour
         ground.Stop();
         slowMotion.SlowForDuration(0.5f, 2f);
     }
-
-
 }

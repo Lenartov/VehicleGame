@@ -31,16 +31,6 @@ public partial class Ground
 
             SpawnFinishLine(parent, finishDistance);
         }
-        public void Clear()
-        {
-            foreach (var part in parts)
-            {
-                Destroy(part);
-            }
-            parts.Clear();
-
-            Destroy(finishLine);
-        }
 
         private void SpawnFinishLine(Transform parent, float finishDistance)
         {

@@ -1,6 +1,5 @@
 using DG.Tweening;
 using System;
-using System.Collections;
 using UnityEngine;
 
 public partial class Ground : MonoBehaviour
@@ -10,12 +9,14 @@ public partial class Ground : MonoBehaviour
     [Space]
     [SerializeField] private GameObject finishLinePrefab;
     [SerializeField] private float levelLength = 1f;
+    [SerializeField] private float closeDistanceToFinish;
     [Space]
     [SerializeField] private float desiredSpeed;
     [SerializeField] private float accelerationDuration;
     [SerializeField] private float stopDuration;
 
     public event Action OnWin;
+    public event Action OnCloseToFinish;
     public event Action<float> OnDistanceChanged;
 
     private GroundSpawner groundSpawner;
@@ -24,6 +25,7 @@ public partial class Ground : MonoBehaviour
     private float currentSpeed = 0f;
     private float distanceCovered = 0f;
     private bool isFinished;
+    private bool isCloseToFinish;
 
     private void Awake()
     {
@@ -37,13 +39,22 @@ public partial class Ground : MonoBehaviour
         if (currentSpeed <= 0.05f)
             return;
 
-        transform.Translate(Vector3.forward * (-currentSpeed * Time.deltaTime));
+        Move();
+        HandleCoveredDistance();
+        HandleFinish();
+        HandleClosenessToFinish();
+    }
 
+    private void Move()
+    {
+        transform.Translate(Vector3.forward * (-currentSpeed * Time.deltaTime));
+    }
+
+    private void HandleFinish()
+    {
         if (isFinished)
             return;
 
-        distanceCovered = initPos.z - transform.position.z;
-        OnDistanceChanged?.Invoke(distanceCovered / levelLength);
         if (distanceCovered >= levelLength)
         {
             isFinished = true;
@@ -51,13 +62,31 @@ public partial class Ground : MonoBehaviour
         }
     }
 
+    private void HandleCoveredDistance()
+    {
+        distanceCovered = initPos.z - transform.position.z;
+        OnDistanceChanged?.Invoke(distanceCovered / levelLength);
+    }
+
+    private void HandleClosenessToFinish()
+    {
+        if (isCloseToFinish)
+            return;
+
+        if (distanceCovered + closeDistanceToFinish >= levelLength)
+        {
+            isCloseToFinish = true;
+            OnCloseToFinish?.Invoke();
+        }
+    }
+
     public void Restart()
     {
-        groundSpawner.Clear();
-        groundSpawner.SpawnGround(transform, partsCount, levelLength);
         transform.position = initPos;
         distanceCovered = 0f;
         OnDistanceChanged?.Invoke(distanceCovered / levelLength);
+        isCloseToFinish = false;
+        isFinished = false;
     }
 
     public void Acceleration()

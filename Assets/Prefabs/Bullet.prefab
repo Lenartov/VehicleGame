@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trail: {fileID: 7291868857151666410}
   speed: 60
-  damage: 25
+  damage: 35
 --- !u!54 &4091570720565121605
 Rigidbody:
   m_ObjectHideFlags: 0

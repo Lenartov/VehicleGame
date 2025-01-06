@@ -1,5 +1,6 @@
 using Redcode.Pools;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
@@ -77,5 +78,10 @@ public class EnemySpawner : MonoBehaviour
         {
             enemyPool.Take(Instantiate(enemyPrefab));
         }
+    }
+
+    public void Restart()
+    {
+        enemyPool.Clear(false); // does not work (
     }
 }
