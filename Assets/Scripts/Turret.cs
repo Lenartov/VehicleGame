@@ -59,6 +59,7 @@ public class Turret : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward);
         rb.MoveRotation(targetRotation);
+        StopShooting();
     }
 
     public void LookAtPosition(Vector3 pos)

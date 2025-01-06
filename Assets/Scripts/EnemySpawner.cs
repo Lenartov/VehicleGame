@@ -36,6 +36,9 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnUnit(Vector3 pos)
     {
+        if (enemyPool == null)
+            return;
+
         Enemy enemy = enemyPool.Get();
         enemy.transform.position = pos;
         enemy.transform.rotation = Quaternion.AngleAxis(180f, Vector3.up);

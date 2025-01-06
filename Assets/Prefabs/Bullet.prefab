@@ -173,7 +173,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.12
+  m_Time: 0.15
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -222,7 +222,7 @@ TrailRenderer:
       ctime7: 0
       atime0: 0
       atime1: 5590
-      atime2: 42598
+      atime2: 39514
       atime3: 65535
       atime4: 65535
       atime5: 0

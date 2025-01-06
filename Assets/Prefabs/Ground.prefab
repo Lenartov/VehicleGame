@@ -47,9 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundPartPrefab: {fileID: 1338702570526948119, guid: b7f0d8228ff6fe24bae7f1dee8cd3dda, type: 3}
   partsCount: 10
-  desiredSpeed: 10
-  accelerationDuration: 3
-  stopDuration: 0.3
+  finishLinePrefab: {fileID: 8966390311474380885, guid: 9496336e3a6fada4bad031eaf5d337d6, type: 3}
+  levelLength: 500
+  desiredSpeed: 12
+  accelerationDuration: 2.5
+  stopDuration: 1
+  DistanceCovered: 0
 --- !u!1 &7213542886770141162
 GameObject:
   m_ObjectHideFlags: 0

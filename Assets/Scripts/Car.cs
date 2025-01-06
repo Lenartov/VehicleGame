@@ -19,8 +19,6 @@ public class Car : MonoBehaviour, IDamagable
     {
         health = new Health(maxHealth, healthBar);
         health.OnDeath += Die;
-
-        OnDie += turret.StopShooting;
     }
 
     public void Activate()

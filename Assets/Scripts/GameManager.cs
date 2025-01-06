@@ -15,20 +15,22 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        car.OnDie += Lose;
-        car.Deactivate();
         playerInput.HandleInput = false;
         UIManager.ShowStart();
+        car.OnDie += Lose;
+        car.Deactivate();
+        ground.OnDistanceChanged += UIManager.ProgressBar.SetProgress;
+        ground.OnWin += Win;
     }
 
     public void StartGame()
     {
         playerInput.HandleInput = true;
+        UIManager.ShowProgressBar();
         car.Activate();
-        UIManager.HideAll();
-        ground.Acceleration();
         cameraController.UseGameView();
         spawner.StartSpawning();
+        ground.Acceleration();
     }
 
     public void Restart()
@@ -39,18 +41,23 @@ public class GameManager : MonoBehaviour
     public void Lose()
     {
         playerInput.HandleInput = false;
+        UIManager.ShowLoseRestart();
         car.Deactivate();
+        cameraController.UseStartScreenView();
         spawner.CancelSpawning();
         ground.Stop();
-        cameraController.UseStartScreenView();
         slowMotion.SlowForDuration(0.3f, 2f);
-        UIManager.ShowLoseRestart();
     }
 
     public void Win()
     {
         playerInput.HandleInput = false;
         UIManager.ShowWinRestart();
+        car.Deactivate();
+        cameraController.UseStartScreenView();
+        spawner.CancelSpawning();
+        ground.Stop();
+        slowMotion.SlowForDuration(0.5f, 2f);
     }
 
 
